@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="activity_horizontal_padding">6dp</dimen>
+    <dimen name="card_margin">4dp</dimen>
+</resources>

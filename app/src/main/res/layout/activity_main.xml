@@ -1,0 +1,475 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/wait"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:src="@drawable/wait" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:text="Sto contattando il server..."
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/subtitle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nobroker"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:src="@drawable/nobroker" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:text="Impossibile connettersi al sistema Domo"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/subtitle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nonode"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:src="@drawable/nonode" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:text="Uno o più nodi non sono attualmente disponibili"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/subtitle" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/container"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ddd">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="6dp"
+            android:paddingLeft="@dimen/activity_horizontal_padding"
+            android:paddingRight="@dimen/activity_horizontal_padding"
+            android:paddingTop="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/temperatura" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/temperatura"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLines="3"
+                        android:text="loading"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Temperatura"
+                        android:textColor="@color/subtitle" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/umidita" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/umidita"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLines="3"
+                        android:text="loading"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Umidità"
+                        android:textColor="@color/subtitle" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/allarme" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/allarme"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginBottom="5dp"
+                        android:background="@null" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Allarme"
+                        android:textColor="@color/subtitle" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/led" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/ledContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginBottom="5dp" >
+                        <Button
+                            android:layout_width="53dp"
+                            android:layout_height="53dp"
+                            android:background="@drawable/button_color"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentRight="true"
+                            android:enabled="false" />
+                        <Button
+                            android:id="@+id/led"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/button_color"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentRight="true" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Led"
+                        android:textColor="@color/subtitle" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/distanza" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/distanza"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLines="3"
+                        android:text="loading"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Distanza"
+                        android:textColor="@color/subtitle" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/rumore" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/rumore"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLines="3"
+                        android:text="loading"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Rumore"
+                        android:textColor="@color/subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/luce" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/luce"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLines="3"
+                        android:text="loading"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Luce"
+                        android:textColor="@color/subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_margin"
+                android:layout_marginLeft="@dimen/card_margin"
+                android:layout_marginRight="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:background="@drawable/card_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/movimento" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/movimento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLines="3"
+                        android:text="loading"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:minLines="1"
+                        android:text="Ultimo movimento"
+                        android:textColor="@color/subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
