@@ -25,6 +25,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -73,6 +74,26 @@ public class MainActivity extends ActionBarActivity {
     private RunnableSwitch runnableSwitch;
     private RunnableLed runnableLed;
 
+    private CompoundButton.OnCheckedChangeListener allarmeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            allarme.setEnabled(false);
+            runnableSwitch = new RunnableSwitch(!allarme.isEnabled());
+            handler.postDelayed(runnableSwitch, TIMEOUT_COMMAND);
+            Bundle data = new Bundle();
+            data.putCharSequence(MqttService.TOPIC, NODE + "/Allarme/c");
+            data.putCharSequence(MqttService.MESSAGE, isChecked ? "1" : "0");
+            data.putInt(MqttService.QOS, 2);
+            Message msg = Message.obtain(null, MqttService.PUBLISH);
+            msg.setData(data);
+            try {
+                service.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,25 +122,7 @@ public class MainActivity extends ActionBarActivity {
                 showColorPickerDialog();
             }
         });
-        allarme.setOnClickListener(new SwitchCompat.OnClickListener() {
-            @Override
-            public void onClick(View buttonView) {
-                allarme.setEnabled(false);
-                runnableSwitch = new RunnableSwitch(!allarme.isEnabled());
-                handler.postDelayed(runnableSwitch, TIMEOUT_COMMAND);
-                Bundle data = new Bundle();
-                data.putCharSequence(MqttService.TOPIC, NODE + "/Allarme/c");
-                data.putCharSequence(MqttService.MESSAGE, allarme.isChecked() ? "1" : "0");
-                data.putInt(MqttService.QOS, 2);
-                Message msg = Message.obtain(null, MqttService.PUBLISH);
-                msg.setData(data);
-                try {
-                    service.send(msg);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        allarme.setOnCheckedChangeListener(allarmeListener);
 
         intentFilter = new IntentFilter();
         intentFilter.addAction(MESSAGE);
@@ -159,7 +162,9 @@ public class MainActivity extends ActionBarActivity {
         }
         @Override
         public void run() {
+            allarme.setOnCheckedChangeListener(null);
             allarme.setChecked(prevState);
+            allarme.setOnCheckedChangeListener(allarmeListener);
             allarme.setEnabled(true);
         }
     };
@@ -196,7 +201,9 @@ public class MainActivity extends ActionBarActivity {
                     umidita.setText(message + " %");
                 } else if (topic.equals(NODE + "/Allarme")) {
                     handler.removeCallbacks(runnableSwitch);
+                    allarme.setOnCheckedChangeListener(null);
                     allarme.setChecked(message.equals("1"));
+                    allarme.setOnCheckedChangeListener(allarmeListener);
                     allarme.setEnabled(true);
                 } else if (topic.equals(NODE + "/Led")) {
                     handler.removeCallbacks(runnableLed);

@@ -44,7 +44,8 @@ import javax.net.ssl.X509TrustManager;
 
 public class MqttService extends Service {
 
-    private static final String topicAllarme = "Suxsem/Allarme";
+    //private static final String topicAllarme = "Suxsem/Allarme";
+    private static final String topicAllarme = "DomoOne/Motivo"; //todo remove
 
     private static boolean serviceRunning = false;
     private static int mid = 0;
@@ -344,7 +345,7 @@ public class MqttService extends Service {
                 switch (msg.what) {
                     case CHECKCONNECTIVITY: {
                         Intent intent = new Intent();
-                        if (hasConnectivity)
+                        if (hasConnectivity && client.isConnected())
                             intent.setAction(connectedName);
                         else
                             intent.setAction(disconnectedName);
