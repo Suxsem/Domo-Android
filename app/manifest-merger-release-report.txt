@@ -29,7 +29,6 @@ application
 ADDED from AndroidManifest.xml:9:5
 MERGED from com.android.support:appcompat-v7:21.0.3:16:5
 MERGED from com.android.support:support-v4:21.0.3:16:5
-MERGED from Domo:ColorPicker:unspecified:11:5
 	android:label
 		ADDED from AndroidManifest.xml:12:9
 	android:allowBackup
@@ -81,21 +80,3 @@ MERGED from Domo:ColorPicker:unspecified:7:5
 	android:minSdkVersion
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0
-activity#com.chiralcode.colorpicker.demo.DemoActivity
-ADDED from Domo:ColorPicker:unspecified:16:9
-	android:label
-		ADDED from Domo:ColorPicker:unspecified:18:13
-	android:name
-		ADDED from Domo:ColorPicker:unspecified:17:13
-activity#com.chiralcode.colorpicker.demo.ColorPickerActivity
-ADDED from Domo:ColorPicker:unspecified:25:9
-	android:name
-		ADDED from Domo:ColorPicker:unspecified:25:19
-activity#com.chiralcode.colorpicker.demo.MultiColorPickerActivity
-ADDED from Domo:ColorPicker:unspecified:26:9
-	android:name
-		ADDED from Domo:ColorPicker:unspecified:26:19
-activity#com.chiralcode.colorpicker.demo.PreferencesActivity
-ADDED from Domo:ColorPicker:unspecified:27:9
-	android:name
-		ADDED from Domo:ColorPicker:unspecified:27:19

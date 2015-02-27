@@ -78,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             allarme.setEnabled(false);
-            runnableSwitch = new RunnableSwitch(!allarme.isEnabled());
+            runnableSwitch = new RunnableSwitch(!isChecked);
             handler.postDelayed(runnableSwitch, TIMEOUT_COMMAND);
             Bundle data = new Bundle();
             data.putCharSequence(MqttService.TOPIC, NODE + "/Allarme/c");

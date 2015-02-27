@@ -41,7 +41,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-
 public class MqttService extends Service {
 
     //private static final String topicAllarme = "Suxsem/Allarme";

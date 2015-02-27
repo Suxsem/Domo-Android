@@ -8,8 +8,8 @@ android {
         applicationId "com.suxsem.domo"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0b1"
+        versionCode 3
+        versionName "1.0b3"
     }
     buildTypes {
         release {
