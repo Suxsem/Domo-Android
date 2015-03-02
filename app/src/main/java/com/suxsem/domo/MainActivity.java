@@ -22,7 +22,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -312,7 +312,7 @@ public class MainActivity extends ActionBarActivity {
                 Bundle data = new Bundle();
                 data.putCharSequence(MqttService.TOPIC, NODE + "/Led/c");
                 data.putCharSequence(MqttService.MESSAGE, String.format("%06X", (0xFFFFFF & ledColor)));
-                Log.d(getClass().getCanonicalName(), String.format("%06X", (0xFFFFFF & ledColor)));
+                //Log.d(getClass().getCanonicalName(), String.format("%06X", (0xFFFFFF & ledColor)));
                 handler.postDelayed(runnableLed, TIMEOUT_COMMAND);
                 data.putInt(MqttService.QOS, 2);
                 Message msg = Message.obtain(null, MqttService.PUBLISH);

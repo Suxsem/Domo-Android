@@ -4,7 +4,6 @@ package com.suxsem.domo;
  * Created by Stefano on 23/02/2015.
  */
 
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.internal.ClientComms;
 
@@ -15,9 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-import android.util.Log;
+//import android.util.Log;
 
 /**
  * Default ping sender implementation on Android. It is based on AlarmManager.
@@ -58,7 +55,7 @@ class MqttPingSender implements org.eclipse.paho.client.mqttv3.MqttPingSender {
     public void start() {
         String action = "com.suxsem.domo.PingSender";
 
-        Log.d(TAG, "Register alarmreceiver to MqttService"+ action);
+        //Log.d(TAG, "Register alarmreceiver to MqttService"+ action);
         service.registerReceiver(alarmReceiver, new IntentFilter(action));
 
         pendingIntent = PendingIntent.getBroadcast(service, 0, new Intent(
@@ -75,7 +72,7 @@ class MqttPingSender implements org.eclipse.paho.client.mqttv3.MqttPingSender {
                 .getSystemService(Service.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
 
-        Log.d(TAG, "Unregister alarmreceiver to MqttService"+comms.getClient().getClientId());
+        //Log.d(TAG, "Unregister alarmreceiver to MqttService"+comms.getClient().getClientId());
         if(hasStarted){
             hasStarted = false;
             try{
@@ -90,7 +87,7 @@ class MqttPingSender implements org.eclipse.paho.client.mqttv3.MqttPingSender {
     public void schedule(long delayInMilliseconds) {
         long nextAlarmInMilliseconds = System.currentTimeMillis()
                 + delayInMilliseconds;
-        Log.d(TAG, "Schedule next alarm at " + nextAlarmInMilliseconds);
+        //Log.d(TAG, "Schedule next alarm at " + nextAlarmInMilliseconds);
         AlarmManager alarmManager = (AlarmManager) service
                 .getSystemService(Service.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, nextAlarmInMilliseconds,
@@ -110,9 +107,9 @@ class MqttPingSender implements org.eclipse.paho.client.mqttv3.MqttPingSender {
             // finished handling the broadcast."
 
             int count = intent.getIntExtra(Intent.EXTRA_ALARM_COUNT, -1);
-            Log.d(TAG, "Ping " + count + " times.");
+            //Log.d(TAG, "Ping " + count + " times.");
 
-            Log.d(TAG, "Check time :" + System.currentTimeMillis());
+            //Log.d(TAG, "Check time :" + System.currentTimeMillis());
             IMqttToken token = comms.checkForActivity();
 
             // No ping has been sent.

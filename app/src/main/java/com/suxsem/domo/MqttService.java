@@ -34,7 +34,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.util.Log;
+//import android.util.Log;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -383,7 +383,7 @@ public class MqttService extends Service {
                         if (hasConnectivity && !client.isConnected()) {
                             try {
                                 client.connect(options);
-                                Log.d(getClass().getCanonicalName(), "Connected");
+                                //Log.d(getClass().getCanonicalName(), "Connected");
                                 /*
                                  * Re-subscribe to previously subscribed topics
                                  */
@@ -397,7 +397,7 @@ public class MqttService extends Service {
                                 }
                                 timeout = MINTIMEOUT;
                             } catch (MqttException e) {
-                                Log.d(getClass().getCanonicalName(), "Connection attemp failed with reason code = " + e.getReasonCode() + e.getCause());
+                                //Log.d(getClass().getCanonicalName(), "Connection attemp failed with reason code = " + e.getReasonCode() + e.getCause());
                                 if (timeout < MAXTIMEOUT) {
                                     timeout *= 2;
                                 }
@@ -477,9 +477,9 @@ public class MqttService extends Service {
             private boolean subscribe(String topic, int qos) {
                 try {
                     client.subscribe(topic, qos);
-                    Log.d(getClass().getCanonicalName(), "Subscribed to: " + topic);
+                    //Log.d(getClass().getCanonicalName(), "Subscribed to: " + topic);
                 } catch (MqttException e) {
-                    Log.d(getClass().getCanonicalName(), "Subscribe failed with reason code = " + e.getReasonCode());
+                    //Log.d(getClass().getCanonicalName(), "Subscribe failed with reason code = " + e.getReasonCode());
                     return false;
                 }
                 return true;
@@ -488,9 +488,9 @@ public class MqttService extends Service {
             private boolean unsubscribe(String topic) {
                 try {
                     client.unsubscribe(topic);
-                    Log.d(getClass().getCanonicalName(), "Unsubscribed from: " + topic);
+                    //Log.d(getClass().getCanonicalName(), "Unsubscribed from: " + topic);
                 } catch (MqttException e) {
-                    Log.d(getClass().getCanonicalName(), "Unsubscribe failed with reason code = " + e.getReasonCode());
+                    //Log.d(getClass().getCanonicalName(), "Unsubscribe failed with reason code = " + e.getReasonCode());
                     return false;
                 }
                 return true;
@@ -505,7 +505,7 @@ public class MqttService extends Service {
                     message.setRetained(retain);
                     client.publish(topic, message);
                 } catch (MqttException e) {
-                    Log.d(getClass().getCanonicalName(), "Publish failed with reason code = " + e.getReasonCode());
+                    //Log.d(getClass().getCanonicalName(), "Publish failed with reason code = " + e.getReasonCode());
                     return false;
                 }
                 return true;
@@ -513,7 +513,7 @@ public class MqttService extends Service {
 
             @Override
             public void connectionLost(Throwable arg0) {
-                Log.d(getClass().getCanonicalName(), "connectionLost");
+                //Log.d(getClass().getCanonicalName(), "connectionLost");
                 if (disconnectedName != null) {
                     Intent intent = new Intent();
                     intent.setAction(disconnectedName);
@@ -528,7 +528,7 @@ public class MqttService extends Service {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.d(getClass().getCanonicalName(), topic + ":" + message.toString());
+                //Log.d(getClass().getCanonicalName(), topic + ":" + message.toString());
 
                 if (intentName != null) {
                     Intent intent = new Intent();
