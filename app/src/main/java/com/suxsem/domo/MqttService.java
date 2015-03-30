@@ -4,6 +4,8 @@ package com.suxsem.domo;
  * Created by Stefano on 12/02/2015.
  */
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -26,6 +28,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -34,6 +37,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 //import android.util.Log;
 
 import javax.net.ssl.SSLContext;
@@ -51,6 +55,7 @@ public class MqttService extends Service {
     private static MQTTConnection connection = null;
     private final Messenger clientMessenger = new Messenger(new ClientHandler());
     private MqttService service = this;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
     public void onCreate() {
@@ -60,6 +65,22 @@ public class MqttService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         registerReceiver(receiver, filter);
+
+        // Use instance field for listener
+        // It will not be gc'd as long as this instance is kept referenced
+        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                if (!key.equals("host") && !key.equals("port") && !key.equals("user") && !key.equals("password") && !key.equals("ssl"))
+                    return;
+                Message msg = Message.obtain(null, RECONNECT);
+                try {
+                    clientMessenger.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(listener);
     }
 
     @Override
@@ -112,6 +133,7 @@ public class MqttService extends Service {
     public static final int PUBLISH = 3;
     private static final int CONNECTIVITYCHANGE = 4;
     public static final int CHECKCONNECTIVITY = 5;
+    private static final int RECONNECT = 6;
 
     /*
      * Fixed strings for the supported messages.
@@ -172,6 +194,7 @@ public class MqttService extends Service {
                 case PUBLISH:
                 case CONNECTIVITYCHANGE:
                 case CHECKCONNECTIVITY:
+                case RECONNECT:
            		 	/*
            		 	 * These requests should be handled by
            		 	 * the connection thread, call makeRequest
@@ -283,9 +306,9 @@ public class MqttService extends Service {
         }
 
         private class MsgHandler extends Handler implements MqttCallback {
-            private final String HOST = getResources().getString(R.string.broker_host);
-            private final int PORT = 8883;
-            private final String uri = "ssl://" + HOST + ":" + PORT;
+            //private final String HOST = getResources().getString(R.string.broker_host);
+            //private final int PORT = 8883;
+            //private final String uri = "ssl://" + HOST + ":" + PORT;
             private final int MINTIMEOUT = 2000;
             private final int MAXTIMEOUT = 64000;
             private int timeout = MINTIMEOUT;
@@ -294,18 +317,15 @@ public class MqttService extends Service {
             private Vector<String> topics = new Vector<String>();
             private Vector<Integer> topicsQos = new Vector<Integer>();
             private boolean hasConnectivity = false;
-
-            MemoryPersistence persistence = new MemoryPersistence();
+            private SSLSocketFactory socketFactory;
+            private MemoryPersistence persistence = new MemoryPersistence();
 
             MsgHandler() {
-
                 topics.add(topicAllarme);
                 topicsQos.add(2);
 
                 options.setCleanSession(true);
                 options.setKeepAliveInterval(240);
-                options.setUserName(getResources().getString(R.string.username));
-                options.setPassword(getResources().getString(R.string.password).toCharArray());
 
                 try {
                     X509TrustManager stupidTruster = new X509TrustManager() {
@@ -329,12 +349,46 @@ public class MqttService extends Service {
                             new TrustManager[]{stupidTruster},
                             null);
 
-                    SSLSocketFactory socketFactory = sslContext.getSocketFactory();
-                    options.setSocketFactory(socketFactory);
+                    socketFactory = sslContext.getSocketFactory();
+                } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                    e.printStackTrace();
+                }
 
+                setConnectionInfo();
+            }
+
+            private void setConnectionInfo() {
+                try {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(service);
+                    final String user = prefs.getString("user", "");
+                    final String passwordEnc = prefs.getString("password", "");
+                    final String passwordKey = prefs.getString("key", "");
+                    String password = "";
+                    if (passwordKey.length() > 0 && passwordEnc.length() > 0) {
+                        try {
+                            AesCbcWithIntegrity.SecretKeys key = AesCbcWithIntegrity.keys(passwordKey);
+                            AesCbcWithIntegrity.CipherTextIvMac civ = new AesCbcWithIntegrity.CipherTextIvMac(passwordEnc);
+                            password = AesCbcWithIntegrity.decryptString(civ, key);
+                        } catch (IllegalArgumentException | GeneralSecurityException | UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    final String host = prefs.getString("host", "");
+                    final String port = prefs.getString("port", "");
+                    options.setUserName(user.length() > 0 ? user : "null");
+                    options.setPassword(password.length() > 0 ? password.toCharArray() : "null".toCharArray());
+                    String uri;
+                    if (prefs.getBoolean("ssl", false)) {
+                        uri = "ssl://" + (host.length() > 0 ? host : "127.0.0.1") + ":" + (port.length() > 0 ? port : "8883");
+                        options.setSocketFactory(socketFactory);
+                    } else {
+                        uri = "tcp://" + (host.length() > 0 ? host : "127.0.0.1") + ":" + (port.length() > 0 ? port : "1883");
+                        options.setSocketFactory(null);
+                    }
                     client = new MqttClientPing(uri, MqttClient.generateClientId(), persistence, new MqttPingSender(service));
                     client.setCallback(this);
-                } catch (MqttException | NoSuchAlgorithmException | KeyManagementException e) {
+                } catch (MqttException e) {
                     e.printStackTrace();
                 }
             }
@@ -344,7 +398,7 @@ public class MqttService extends Service {
                 switch (msg.what) {
                     case CHECKCONNECTIVITY: {
                         Intent intent = new Intent();
-                        if (hasConnectivity && client.isConnected())
+                        if (hasConnectivity && client != null && client.isConnected())
                             intent.setAction(connectedName);
                         else
                             intent.setAction(disconnectedName);
@@ -360,27 +414,26 @@ public class MqttService extends Service {
                             else
                                 removeMessages(CONNECT);
                         }
-                        ReplytoClient(msg.replyTo, msg.what, true);
+                        break;
+                    }
+                    case RECONNECT: {
+                        if (client != null && client.isConnected())
+                            disconnect();
+                        setConnectionInfo();
+                        sendMessage(Message.obtain(null, CONNECT));
                         break;
                     }
                     case STOP: {
 					/*
 					 * Clean up, and terminate.
 					 */
-                        client.setCallback(null);
-                        if (client.isConnected()) {
-                            try {
-                                client.disconnect();
-                                client.close();
-                            } catch (MqttException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        if (client != null && client.isConnected())
+                            disconnect();
                         getLooper().quit();
                         break;
                     }
                     case CONNECT: {
-                        if (hasConnectivity && !client.isConnected()) {
+                        if (hasConnectivity && client != null && !client.isConnected()) {
                             try {
                                 client.connect(options);
                                 //Log.d(getClass().getCanonicalName(), "Connected");
@@ -396,13 +449,13 @@ public class MqttService extends Service {
                                     sendBroadcast(intent);
                                 }
                                 timeout = MINTIMEOUT;
+                                removeMessages(CONNECT);
                             } catch (MqttException e) {
                                 //Log.d(getClass().getCanonicalName(), "Connection attemp failed with reason code = " + e.getReasonCode() + e.getCause());
                                 if (timeout < MAXTIMEOUT) {
                                     timeout *= 2;
                                 }
                                 sendMessageDelayed(Message.obtain(null, CONNECT), timeout);
-                                return;
                             }
                         }
                         break;
@@ -425,7 +478,7 @@ public class MqttService extends Service {
 	        					        */
                                         topics.add(topic);
                                         topicsQos.add(qos);
-                                        if (client.isConnected())
+                                        if (client != null && client.isConnected())
                                             subscribe(topic, qos);
                                     }
                                 }
@@ -445,7 +498,7 @@ public class MqttService extends Service {
                                         topics.remove(toRemove);
                                         topicsQos.remove(toRemove); //autoboxing
                                     }
-                                    if (client.isConnected())
+                                    if (client != null && client.isConnected())
                                         unsubscribe(topic);
                                 }
                             }
@@ -455,7 +508,7 @@ public class MqttService extends Service {
                     case PUBLISH: {
                         boolean status = false;
                         Bundle b = msg.getData();
-                        if (b != null && client.isConnected()) {
+                        if (b != null && client != null && client.isConnected()) {
                             CharSequence csTopic = b.getCharSequence(TOPIC);
                             CharSequence csMessage = b.getCharSequence(MESSAGE);
                             int qos = b.getInt(QOS, 0);
@@ -496,7 +549,6 @@ public class MqttService extends Service {
                 return true;
             }
 
-
             private boolean publish(String topic, String msg, int qos, boolean retain) {
                 try {
                     MqttMessage message = new MqttMessage();
@@ -511,9 +563,19 @@ public class MqttService extends Service {
                 return true;
             }
 
+            private void disconnect() {
+                try {
+                    client.disconnect();
+                    connectionLost(null);
+                    client.close();
+                    client = null;
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+            }
+
             @Override
             public void connectionLost(Throwable arg0) {
-                //Log.d(getClass().getCanonicalName(), "connectionLost");
                 if (disconnectedName != null) {
                     Intent intent = new Intent();
                     intent.setAction(disconnectedName);

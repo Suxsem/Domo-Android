@@ -4,6 +4,11 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorControlActivated">@color/primary</item>
+        <item name="floatingActionButtonStyle">@style/AppTheme.Fab</item>
+    </style>
+
+    <style name="AppTheme.Fab" parent="FloatingActionButton">
+        <item name="floatingActionButtonColor">@color/primary</item>
     </style>
 
 </resources>

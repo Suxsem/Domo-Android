@@ -22,7 +22,8 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SwitchCompat;
-//import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -51,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
     private final static String CONENCTED = "com.suxsem.domo.Connected";
     private final static String DISCONNECTED = "com.suxsem.domo.Disconnected";
 
+    private int connected = -1;
     private ScrollView container;
     private LinearLayout wait;
     private LinearLayout nobroker;
@@ -144,6 +146,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onStop() {
         super.onStop();
         subscribe(false);
+        connected = -1;
+        showView(wait);
         unregisterReceiver(pushReceiver);
         unbindService(serviceConnection);
     }
@@ -157,9 +161,11 @@ public class MainActivity extends ActionBarActivity {
 
     private final class RunnableSwitch implements Runnable {
         private final boolean prevState;
+
         public RunnableSwitch(boolean state) {
             prevState = state;
         }
+
         @Override
         public void run() {
             allarme.setOnCheckedChangeListener(null);
@@ -167,13 +173,17 @@ public class MainActivity extends ActionBarActivity {
             allarme.setOnCheckedChangeListener(allarmeListener);
             allarme.setEnabled(true);
         }
-    };
+    }
+
+    ;
 
     private final class RunnableLed implements Runnable {
         private final int prevState;
+
         public RunnableLed(int state) {
             prevState = state;
         }
+
         @Override
         public void run() {
             ledColor = prevState;
@@ -181,7 +191,9 @@ public class MainActivity extends ActionBarActivity {
             ledContainer.setAlpha(1f);
             led.setEnabled(true);
         }
-    };
+    }
+
+    ;
 
     public class PushReceiver extends BroadcastReceiver {
         @Override
@@ -220,11 +232,13 @@ public class MainActivity extends ActionBarActivity {
                 } else if (topic.equals(NODE + "/Movimento")) {
                     movimento.setText(sdf.format(new Date(Long.parseLong(message) * 1000)));
                 }
-            } else if (i.getAction().equals(CONENCTED)) {
+            } else if (i.getAction().equals(CONENCTED) && connected != 1) {
+                connected = 1;
                 showView(wait);
                 subscribe(true);
                 handler.postDelayed(nodeTimeout, TIMEOUT_DISCOVER);
-            } else if (i.getAction().equals(DISCONNECTED)) {
+            } else if (i.getAction().equals(DISCONNECTED) && connected != 0) {
+                connected = 0;
                 showView(nobroker);
                 subscribe(false);
             }
@@ -258,15 +272,15 @@ public class MainActivity extends ActionBarActivity {
     private void subscribe(boolean subscribe) {
         Bundle data;
         Message msg;
-        String[] topics = { NODE + "/status",
-                            NODE + "/Temperatura",
-                            NODE + "/Umidità",
-                            NODE + "/Allarme",
-                            NODE + "/Led",
-                            NODE + "/Distanza",
-                            NODE + "/Rumore",
-                            NODE + "/Luce",
-                            NODE + "/Movimento" };
+        String[] topics = {NODE + "/status",
+                NODE + "/Temperatura",
+                NODE + "/Umidità",
+                NODE + "/Allarme",
+                NODE + "/Led",
+                NODE + "/Distanza",
+                NODE + "/Rumore",
+                NODE + "/Luce",
+                NODE + "/Movimento"};
         try {
             for (int i = 0; i < topics.length; i++) {
                 data = new Bundle();
@@ -299,8 +313,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void showColorPickerDialog()
-    {
+    private void showColorPickerDialog() {
         colorPickerDialog = new ColorPickerDialog(this, ledColor, new ColorPickerDialog.OnColorSelectedListener() {
             @Override
             public void onColorSelected(int color) {
@@ -312,7 +325,6 @@ public class MainActivity extends ActionBarActivity {
                 Bundle data = new Bundle();
                 data.putCharSequence(MqttService.TOPIC, NODE + "/Led/c");
                 data.putCharSequence(MqttService.MESSAGE, String.format("%06X", (0xFFFFFF & ledColor)));
-                //Log.d(getClass().getCanonicalName(), String.format("%06X", (0xFFFFFF & ledColor)));
                 handler.postDelayed(runnableLed, TIMEOUT_COMMAND);
                 data.putInt(MqttService.QOS, 2);
                 Message msg = Message.obtain(null, MqttService.PUBLISH);
@@ -347,4 +359,23 @@ public class MainActivity extends ActionBarActivity {
             showColorPickerDialog();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Intent myIntent = new Intent(this, SettingsActivity.class);
+                startActivity(myIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }
