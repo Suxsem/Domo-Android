@@ -47,8 +47,8 @@ import javax.net.ssl.X509TrustManager;
 
 public class MqttService extends Service {
 
-    //private static final String topicAllarme = "Suxsem/Allarme";
-    private static final String topicAllarme = "DomoOne/Motivo"; //todo remove
+    private static final String topicAllarme1 = "Suxsem/Allarme";
+    private static final String topicAllarme2 = "ArseniAlarm/Scattato";
 
     private static boolean serviceRunning = false;
     private static int mid = 0;
@@ -321,7 +321,9 @@ public class MqttService extends Service {
             private MemoryPersistence persistence = new MemoryPersistence();
 
             MsgHandler() {
-                topics.add(topicAllarme);
+                topics.add(topicAllarme1);
+                topicsQos.add(2);
+                topics.add(topicAllarme2);
                 topicsQos.add(2);
 
                 options.setCleanSession(true);
@@ -613,7 +615,7 @@ public class MqttService extends Service {
                     pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
                 }
 
-                if (topic.equals(topicAllarme)) {
+                if (topic.equals(topicAllarme1) || topic.equals(topicAllarme2)) {
                     //build the notification
                     Builder notificationCompat = new Builder(context);
                     notificationCompat.setAutoCancel(true)
